@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace InternetMessage.Reader
 {
@@ -40,7 +41,7 @@ namespace InternetMessage.Reader
                     yield break;
                 }
 
-                if (!line.StartsWith(" "))
+                if (!line.First().IsWsp())
                 {
                     if (currentHeader.Count > 0)
                         yield return new InternetMessageHeader(currentHeader);
