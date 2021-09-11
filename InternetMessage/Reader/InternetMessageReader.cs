@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace InternetMessage.Reader
@@ -7,51 +8,58 @@ namespace InternetMessage.Reader
     {
         private readonly TextReader _textReader;
 
-
-        private InternetMessageNode _node;
-        public InternetMessageNode Node
+        private enum State
         {
-            get { return _node; }
-            private set
-            {
-                _node = value;
-                NodeType = _node?.Type ?? InternetMessageNodeType.End;
-            }
+            Start,
+            Headers,
+            Body,
+            End
         }
 
-        public InternetMessageNodeType NodeType { get; private set; } = InternetMessageNodeType.Start;
+        private State _state = State.Start;
 
         public InternetMessageReader(TextReader textReader)
         {
             _textReader = textReader;
         }
 
-        public bool ReadNext()
+        public IEnumerable<InternetMessageHeader> ReadHeaders()
         {
-            // --- end is already reached
-            if (NodeType == InternetMessageNodeType.End)
-                return false;
-
-            // --- last time we read the body, so this is goodbye
-            if (NodeType == InternetMessageNodeType.Body)
+            if (_state >= State.Body)
+                throw new InvalidOperationException("Headers have already been read");
+            _state = State.Headers;
+            var currentHeader = new List<string>();
+            for (; ; )
             {
-                Node = null;
-                NodeType = InternetMessageNodeType.End;
-                return false;
-            }
+                var line = _textReader.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                {
+                    if (currentHeader.Count > 0)
+                        yield return new InternetMessageHeader(currentHeader);
+                    _state = State.Body;
+                    yield break;
+                }
 
-            // --- we are currently reading headers, but this may change
-            var line = _textReader.ReadLine();
-            if (string.IsNullOrEmpty(line)) // (RFC 5322 § 3.5)
-            {
-                Node = new InternetMessageBody(_textReader.ReadToEnd());
-                return true;
+                if (!line.StartsWith(" "))
+                {
+                    if (currentHeader.Count > 0)
+                        yield return new InternetMessageHeader(currentHeader);
+                    currentHeader = new List<string> { line };
+                }
+                else
+                {
+                    // append to current header (which is folded)
+                    currentHeader.Add(line);
+                }
             }
+        }
 
-            var lines = new List<string> { line };
-            for (;;)
-            {
-            }
+        public InternetMessageBody ReadBody()
+        {
+            if (_state != State.Body)
+                throw new InvalidOperationException("Wrong time to read body");
+            _state = State.End;
+            return new InternetMessageBody(_textReader.ReadToEnd());
         }
     }
 }

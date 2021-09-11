@@ -1,7 +1,10 @@
-﻿namespace InternetMessage.Reader
+﻿using System.Collections.Generic;
+
+namespace InternetMessage.Reader
 {
-    public class InternetMessageHeader : InternetMessageNode
+    public class InternetMessageHeader 
     {
-        public override InternetMessageNodeType Type => InternetMessageNodeType.Header;
+        public InternetMessageHeader(IEnumerable<string> foldedHeader)
+        {}
     }
 }

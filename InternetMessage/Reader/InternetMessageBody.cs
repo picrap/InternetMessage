@@ -1,14 +1,12 @@
 ﻿namespace InternetMessage.Reader
 {
-    public class InternetMessageBody: InternetMessageNode
+    public class InternetMessageBody
     {
-        public override InternetMessageNodeType Type => InternetMessageNodeType.Body;
+        public string Body { get; }
 
-        private string v;
-
-        public InternetMessageBody(string v)
+        public InternetMessageBody(string body)
         {
-            this.v = v;
+            Body = body;
         }
     }
 }
