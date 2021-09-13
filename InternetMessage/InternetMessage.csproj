@@ -17,4 +17,8 @@
     <Compile Remove="System\**" Condition="'$(TargetFramework)' != 'net40-client'" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\LICENSE" Link="LICENSE" />
+  </ItemGroup>
+
 </Project>
