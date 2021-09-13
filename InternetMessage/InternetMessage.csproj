@@ -11,6 +11,7 @@
     <PackageTags>rfc5322</PackageTags>
     <AssemblyVersion>0.1</AssemblyVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <FileVersion>0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
