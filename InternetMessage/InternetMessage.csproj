@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>net40-client;net5.0</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>picrap</Authors>
+    <PackageProjectUrl>https://github.com/picrap/InternetMessage</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/picrap/InternetMessage.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>rfc5322</PackageTags>
+    <AssemblyVersion>0.1</AssemblyVersion>
+    <PackageLicenseFile>C:\Users\Pascal\Documents\Developpement\InternetMessage\LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
