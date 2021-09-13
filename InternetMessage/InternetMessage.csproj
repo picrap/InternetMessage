@@ -10,7 +10,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>rfc5322</PackageTags>
     <AssemblyVersion>0.1</AssemblyVersion>
-    <PackageLicenseFile>C:\Users\Pascal\Documents\Developpement\InternetMessage\LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="..\LICENSE" Link="LICENSE" />
+    <None Include="..\LICENSE" Link="LICENSE" />
   </ItemGroup>
 
 </Project>
