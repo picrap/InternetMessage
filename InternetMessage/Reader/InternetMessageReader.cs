@@ -45,7 +45,7 @@ namespace InternetMessage.Reader
                     yield break;
                 }
 
-                if (!line.First().IsWsp())
+                if (!line.First().Is(CharacterType.Wsp))
                 {
                     if (currentHeader.Count > 0)
                         yield return CreateHeaderField(currentHeader, _factory);
