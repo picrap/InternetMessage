@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE" Link="LICENSE" />
+    <Resource Include="..\LICENSE" Link="LICENSE" />
   </ItemGroup>
 
 </Project>
