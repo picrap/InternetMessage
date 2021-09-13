@@ -12,7 +12,8 @@
     <AssemblyVersion>0.1</AssemblyVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <FileVersion></FileVersion>
-    <Version>0.1</Version>
+    <Version>0.1.1</Version>
+    <Description>An Internet Message Format Parser (In the end should be close to RFC 5322)</Description>
   </PropertyGroup>
 
   <ItemGroup>
