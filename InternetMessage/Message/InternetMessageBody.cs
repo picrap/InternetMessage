@@ -1,4 +1,4 @@
-﻿namespace InternetMessage.Reader
+﻿namespace InternetMessage.Message
 {
     public class InternetMessageBody
     {

@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using InternetMessage.Message;
+using InternetMessage.Utility;
 
 namespace InternetMessage.Reader
 {
     public class InternetMessageReader
     {
         private readonly TextReader _textReader;
+        private readonly InternetMessageHeaderFactory _factory;
 
         private enum State
         {
@@ -19,12 +22,13 @@ namespace InternetMessage.Reader
 
         private State _state = State.Start;
 
-        public InternetMessageReader(TextReader textReader)
+        public InternetMessageReader(TextReader textReader, InternetMessageHeaderFactory factory = null)
         {
             _textReader = textReader;
+            _factory = factory;
         }
 
-        public IEnumerable<InternetMessageHeader> ReadHeaders()
+        public IEnumerable<InternetMessageHeaderField> ReadHeaders()
         {
             if (_state >= State.Body)
                 throw new InvalidOperationException("Headers have already been read");
@@ -36,7 +40,7 @@ namespace InternetMessage.Reader
                 if (string.IsNullOrEmpty(line))
                 {
                     if (currentHeader.Count > 0)
-                        yield return new InternetMessageHeader(currentHeader);
+                        yield return CreateHeaderField(currentHeader, _factory);
                     _state = State.Body;
                     yield break;
                 }
@@ -44,7 +48,7 @@ namespace InternetMessage.Reader
                 if (!line.First().IsWsp())
                 {
                     if (currentHeader.Count > 0)
-                        yield return new InternetMessageHeader(currentHeader);
+                        yield return CreateHeaderField(currentHeader, _factory);
                     currentHeader = new List<string> { line };
                 }
                 else
@@ -53,6 +57,14 @@ namespace InternetMessage.Reader
                     currentHeader.Add(line);
                 }
             }
+        }
+
+        private static InternetMessageHeaderField CreateHeaderField(List<string> currentHeader, InternetMessageHeaderFactory factory)
+        {
+            var (headerName, foldedHeaderBody) = currentHeader.SplitFoldedHeaderField();
+            if (factory is null)
+                return new InternetMessageRawHeaderField(headerName,foldedHeaderBody);
+            return factory.CreateHeaderField(headerName, foldedHeaderBody);
         }
 
         public InternetMessageBody ReadBody()

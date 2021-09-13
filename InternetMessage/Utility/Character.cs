@@ -1,4 +1,4 @@
-﻿namespace InternetMessage
+﻿namespace InternetMessage.Utility
 {
     public static class Character
     {

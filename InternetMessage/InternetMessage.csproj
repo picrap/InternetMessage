@@ -5,4 +5,8 @@
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="System\**" Condition="'$(TargetFramework)' != 'net40-client'" />
+  </ItemGroup>
+
 </Project>
