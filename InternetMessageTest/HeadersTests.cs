@@ -40,5 +40,21 @@ namespace InternetMessageTest
             Assert.AreEqual(TokenType.Atom,t[6].Type);
             Assert.AreEqual("170",t[6].Text);
         }
+
+        [Test]
+        public void ReadQuotedStringTest()
+        {
+            var r = new InternetMessageHeaderBodyReader(new StringReader("a \"this is a quoted string\" bc"));
+            var t = r.ReadRawTokens().Single(t => t.Type == TokenType.QuotedString);
+            Assert.AreEqual("\"this is a quoted string\"",t.Text);
+        }
+
+        [Test]
+        public void ReadCommentTest()
+        {
+            var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a (small comment) bc"));
+            var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
+            Assert.AreEqual("(small comment)",t.Text);
+        }
     }
 }

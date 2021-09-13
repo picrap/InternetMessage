@@ -17,6 +17,10 @@ namespace InternetMessage.Reader
             _charReader = new(textReader);
         }
 
+        /// <summary>
+        /// First-level parsing, no grouping is made
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Token> ReadRawTokens()
         {
             for (; ; )
@@ -37,6 +41,14 @@ namespace InternetMessage.Reader
                     yield return new Token(CaptureBefore(c.Value, CharacterType.Atext), TokenType.Atom);
             }
         }
+
+        /// <summary>
+        /// Second-level parsing:
+        /// - atoms are grouped
+        /// - whitespaces and comments are ignored
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Token> ReadTokens() => ReadRawTokens().Group();
 
         private string CaptureBefore(char start, CharacterType @while)
         {
