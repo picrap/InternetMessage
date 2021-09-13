@@ -6,6 +6,9 @@ branches:
 version: '{branch}-{build}'
 image: Visual Studio 2019
 
+before_build:
+  nuget restore
+
 nuget:
   account_feed: true
   project_feed: true
