@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using InternetMessage.Message;
+using InternetMessage.Tokens;
 
 namespace InternetMessage.Utility
 {
@@ -23,6 +25,17 @@ namespace InternetMessage.Utility
             var (name, body) = foldedRawBody[0].SplitHeaderField();
             foldedRawBody[0] = body;
             return (name, foldedRawBody);
+        }
+
+        public static string GetMultipartMarker(this IDictionary<string, ICollection<InternetMessageHeaderField>> headerFields)
+        {
+            if (!headerFields.TryGetValue("Content-Type", out var contentTypeHeaderField))
+                return null;
+            var internetMessageStructuredHeaderField = contentTypeHeaderField.First().To<InternetMessageStructuredHeaderField>();
+            var tokens = internetMessageStructuredHeaderField.Tokens.NonWhite().ChunkBy(tokenType: TokenType.Special, tokenText: ";").ToArray();
+            if (!string.Equals(tokens[0].First().Text, "multipart/mixed", StringComparison.InvariantCultureIgnoreCase))
+                return null;
+            return null;
         }
     }
 }

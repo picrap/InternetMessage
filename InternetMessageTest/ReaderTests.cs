@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace InternetMessageTest
 {
     [TestFixture]
-    public class ReadersTests
+    public class ReaderTests
     {
         #region public const string MultiPartMessage = @"…"
         public const string MultiPartMessage = @"From: ""Some Dude"" <>
@@ -48,6 +48,17 @@ QSBzaW1wbGUgdGV4dCBoZXJl
             var headers = internetMessageReader.ReadHeaders().ToArray();
             var body = internetMessageReader.ReadBody();
             Assert.AreEqual(7,headers.Length);
+        }
+
+        [Test]
+        [Ignore("not finished yet")]
+        public void FullReadTest()
+        {
+            using var textReader = new StringReader(MultiPartMessage);
+            var internetMessageReader = new InternetMessageReader(textReader, InternetMessageFactory.Full);
+            var headers = internetMessageReader.ReadHeaders().ToArray();
+            var body = internetMessageReader.ReadBody();
+            Assert.AreEqual(7, headers.Length);
         }
     }
 }

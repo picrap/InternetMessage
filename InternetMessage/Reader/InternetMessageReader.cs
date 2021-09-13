@@ -28,7 +28,7 @@ namespace InternetMessage.Reader
         public InternetMessageReader(TextReader textReader, InternetMessageFactory factory = null)
         {
             _textReader = textReader;
-            _factory = factory;
+            _factory = factory ?? InternetMessageFactory.Raw;
         }
 
         public IEnumerable<InternetMessageHeaderField> ReadHeaders()
@@ -76,8 +76,6 @@ namespace InternetMessage.Reader
         private static InternetMessageHeaderField CreateHeaderField(List<string> currentHeader, InternetMessageFactory factory)
         {
             var (headerName, foldedHeaderBody) = currentHeader.SplitFoldedHeaderField();
-            if (factory is null)
-                return new InternetMessageRawHeaderField(headerName, foldedHeaderBody);
             return factory.CreateHeaderField(headerName, foldedHeaderBody);
         }
 
@@ -86,8 +84,6 @@ namespace InternetMessage.Reader
             if (_state != State.Body)
                 throw new InvalidOperationException("Wrong time to read body");
             _state = State.End;
-            if (_factory is null)
-                return new InternetMessageBody(_textReader);
             return _factory.CreateBody(_textReader, _readHeaderFields);
         }
     }

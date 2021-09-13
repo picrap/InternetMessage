@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using InternetMessage.Tokens;
 
 namespace InternetMessage.Utility
@@ -21,6 +22,14 @@ namespace InternetMessage.Utility
                 else
                     slice.Add(token);
             }
+            if (slice.Count > 0)
+                yield return slice;
+        }
+
+        // to be removed once Group works
+        public static IEnumerable<Token> NonWhite(this IEnumerable<Token> tokens)
+        {
+            return tokens.Where(t => t.Type != TokenType.Whitespace && t.Type != TokenType.Comment);
         }
 
         public static IEnumerable<Token> Group(this IEnumerable<Token> tokens)
@@ -48,8 +57,7 @@ namespace InternetMessage.Utility
             return child.Type switch
             {
                 TokenType.Whitespace or TokenType.Comment => true,
-                TokenType.QuotedString => false,
-                TokenType.Atom => token.Type == TokenType.Atom || token.Type == TokenType.Special && token.Text == ".",
+                TokenType.Atom or TokenType.QuotedString => token.Type == TokenType.Atom || token.Type == TokenType.QuotedString || token.Type == TokenType.Special && token.Text == ".",
                 TokenType.Special => false,
                 _ => throw new ArgumentOutOfRangeException()
             };

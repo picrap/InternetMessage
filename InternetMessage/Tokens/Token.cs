@@ -1,9 +1,11 @@
 ﻿
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace InternetMessage.Tokens
 {
+    [DebuggerDisplay("{Text} ({Type})")]
     public class Token
     {
         private readonly IList<Token> _groupedTokens = new List<Token>();

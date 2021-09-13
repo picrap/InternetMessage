@@ -2,11 +2,11 @@
 
 namespace InternetMessage.Message
 {
-    public class InternetMessageRawHeaderField : InternetMessageHeaderField
+    public class InternetMessageUnstructuredHeaderField : InternetMessageHeaderField
     {
         public string RawBody { get; }
 
-        public InternetMessageRawHeaderField(string name, IEnumerable<string> foldedRawBody)
+        public InternetMessageUnstructuredHeaderField(string name, IEnumerable<string> foldedRawBody)
             : base(name, foldedRawBody)
         {
             RawBody = string.Join("", FoldedRawBody);

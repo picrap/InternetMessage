@@ -4,14 +4,14 @@ namespace InternetMessage.Message
 {
     public class InternetMessageBody
     {
-        private readonly TextReader _textReader;
+        protected readonly TextReader TextReader;
 
         private string _body;
-        public string Body => _body ??= _textReader.ReadToEnd();
+        public virtual string Body => _body ??= TextReader.ReadToEnd();
 
         public InternetMessageBody(TextReader textReader)
         {
-            _textReader = textReader;
+            TextReader = textReader;
         }
     }
 }
