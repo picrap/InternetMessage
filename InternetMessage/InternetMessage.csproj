@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE" Link="LICENSE" Pack="true" />
+    <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="." />
   </ItemGroup>
 
 </Project>
