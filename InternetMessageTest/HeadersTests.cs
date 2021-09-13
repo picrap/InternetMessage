@@ -46,7 +46,7 @@ namespace InternetMessageTest
         {
             var r = new InternetMessageHeaderBodyReader(new StringReader("a \"this is a quoted string\" bc"));
             var t = r.ReadRawTokens().Single(t => t.Type == TokenType.QuotedString);
-            Assert.AreEqual("\"this is a quoted string\"",t.Text);
+            Assert.AreEqual("this is a quoted string",t.Text);
         }
 
         [Test]
@@ -55,6 +55,14 @@ namespace InternetMessageTest
             var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a (small comment) bc"));
             var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
             Assert.AreEqual("(small comment)",t.Text);
+        }
+
+        [Test]
+        public void ReadNestedCommentTest()
+        {
+            var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a ((very) small comment) bc"));
+            var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
+            Assert.AreEqual("((very) small comment)",t.Text);
         }
     }
 }

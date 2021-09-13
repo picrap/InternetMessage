@@ -1,12 +1,17 @@
-﻿namespace InternetMessage.Message
+﻿using System.IO;
+
+namespace InternetMessage.Message
 {
     public class InternetMessageBody
     {
-        public string Body { get; }
+        private readonly TextReader _textReader;
 
-        public InternetMessageBody(string body)
+        private string _body;
+        public string Body => _body ??= _textReader.ReadToEnd();
+
+        public InternetMessageBody(TextReader textReader)
         {
-            Body = body;
+            _textReader = textReader;
         }
     }
 }

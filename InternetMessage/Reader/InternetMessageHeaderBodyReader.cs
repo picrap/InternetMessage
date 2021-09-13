@@ -30,9 +30,9 @@ namespace InternetMessage.Reader
                     yield break;
 
                 if (c.Is(CharacterType.Dquote))
-                    yield return new Token(CaptureUntil(c.Value, c.Value), TokenType.QuotedString);
+                    yield return new Token(CaptureUntil(c.Value, c.Value, false, false), TokenType.QuotedString);
                 else if (c == '(')
-                    yield return new Token(CaptureUntil(c.Value, ')'), TokenType.Comment);
+                    yield return new Token(CaptureUntil(c.Value, ')', true, true), TokenType.Comment);
                 else if (c.Is(CharacterType.Wsp | CharacterType.Control))
                     yield return new Token(c.Value.ToString(), TokenType.Whitespace);
                 else if (c.Is(CharacterType.Specials))
@@ -64,18 +64,30 @@ namespace InternetMessage.Reader
             }
         }
 
-        private string CaptureUntil(char start, char end)
+        private string CaptureUntil(char start, char end, bool nest, bool includeDelimiter)
         {
             var s = new StringBuilder();
-            s.Append(start);
+            if (includeDelimiter)
+                s.Append(start);
+            int nesting = 1;
             for (; ; )
             {
                 var c = _charReader.Read();
                 if (!c.HasValue)
                     throw new FormatException($"End character {end} not found");
-                s.Append(c.Value);
                 if (c == end)
-                    return s.ToString();
+                {
+                    if (includeDelimiter)
+                        s.Append(c.Value);
+                    if (--nesting == 0)
+                        return s.ToString();
+                }
+                else
+                {
+                    if (c == start && nest)
+                        nesting++;
+                    s.Append(c.Value);
+                }
             }
         }
     }

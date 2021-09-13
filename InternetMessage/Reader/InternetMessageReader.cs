@@ -10,7 +10,7 @@ namespace InternetMessage.Reader
     public class InternetMessageReader
     {
         private readonly TextReader _textReader;
-        private readonly InternetMessageHeaderFactory _factory;
+        private readonly InternetMessageFactory _factory;
 
         private enum State
         {
@@ -22,13 +22,27 @@ namespace InternetMessage.Reader
 
         private State _state = State.Start;
 
-        public InternetMessageReader(TextReader textReader, InternetMessageHeaderFactory factory = null)
+        private readonly IDictionary<string, ICollection<InternetMessageHeaderField>> _readHeaderFields
+            = new Dictionary<string, ICollection<InternetMessageHeaderField>>(StringComparer.InvariantCultureIgnoreCase);
+
+        public InternetMessageReader(TextReader textReader, InternetMessageFactory factory = null)
         {
             _textReader = textReader;
             _factory = factory;
         }
 
         public IEnumerable<InternetMessageHeaderField> ReadHeaders()
+        {
+            foreach (var internetMessageHeaderField in DoReadHeaders())
+            {
+                if (!_readHeaderFields.TryGetValue(internetMessageHeaderField.Name, out var headerFields))
+                    _readHeaderFields[internetMessageHeaderField.Name] = headerFields = new List<InternetMessageHeaderField>();
+                headerFields.Add(internetMessageHeaderField);
+                yield return internetMessageHeaderField;
+            }
+        }
+
+        private IEnumerable<InternetMessageHeaderField> DoReadHeaders()
         {
             if (_state >= State.Body)
                 throw new InvalidOperationException("Headers have already been read");
@@ -59,11 +73,11 @@ namespace InternetMessage.Reader
             }
         }
 
-        private static InternetMessageHeaderField CreateHeaderField(List<string> currentHeader, InternetMessageHeaderFactory factory)
+        private static InternetMessageHeaderField CreateHeaderField(List<string> currentHeader, InternetMessageFactory factory)
         {
             var (headerName, foldedHeaderBody) = currentHeader.SplitFoldedHeaderField();
             if (factory is null)
-                return new InternetMessageRawHeaderField(headerName,foldedHeaderBody);
+                return new InternetMessageRawHeaderField(headerName, foldedHeaderBody);
             return factory.CreateHeaderField(headerName, foldedHeaderBody);
         }
 
@@ -72,7 +86,9 @@ namespace InternetMessage.Reader
             if (_state != State.Body)
                 throw new InvalidOperationException("Wrong time to read body");
             _state = State.End;
-            return new InternetMessageBody(_textReader.ReadToEnd());
+            if (_factory is null)
+                return new InternetMessageBody(_textReader);
+            return _factory.CreateBody(_textReader, _readHeaderFields);
         }
     }
 }
