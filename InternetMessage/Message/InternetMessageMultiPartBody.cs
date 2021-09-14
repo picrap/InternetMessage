@@ -22,13 +22,13 @@ namespace InternetMessage.Message
 
         private readonly string _separator;
         private readonly InternetMessageFactory _factory;
-        private string _newPart;
-        private string _lastPart;
+        private readonly string _newPart;
+        private readonly string _lastPart;
         private State _state = State.Start;
         private static readonly Dictionary<string, ICollection<InternetMessageHeaderField>> NoHeaderFields = new Dictionary<string, ICollection<InternetMessageHeaderField>>();
 
-        public InternetMessageMultiPartBody(TextReader textReader, string separator, InternetMessageFactory factory = null)
-            : base(textReader)
+        public InternetMessageMultiPartBody(TextReader textReader, IDictionary<string, ICollection<InternetMessageHeaderField>> headerFields, string separator, InternetMessageFactory factory = null)
+            : base(textReader, headerFields)
         {
             _separator = separator;
             _factory = factory ?? InternetMessageFactory.Raw;
@@ -36,7 +36,15 @@ namespace InternetMessage.Message
             _lastPart = _newPart + "--";
         }
 
-        public override string ReadBody()
+        public override string ReadRawBody()
+        {
+            if (_state != State.Start)
+                throw new InvalidOperationException("Body has already been read");
+            _state = State.End;
+            return TextReader.ReadToEnd();
+        }
+
+        public override InternetMessageBody ReadBody()
         {
             if (_state != State.Start)
                 throw new InvalidOperationException("Body has already been read");
@@ -47,12 +55,12 @@ namespace InternetMessage.Message
                 if (line == _newPart)
                 {
                     _state = State.Body;
-                    return partBuilder.ToString();
+                    return _factory.CreateBody(new StringReader(partBuilder.ToString()), NoHeaderFields);
                 }
                 if (line == _lastPart)
                 {
                     _state = State.Parts;
-                    return partBuilder.ToString();
+                    return _factory.CreateBody(new StringReader(partBuilder.ToString()), NoHeaderFields);
                 }
 
                 partBuilder.AppendLine(line);

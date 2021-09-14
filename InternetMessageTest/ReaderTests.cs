@@ -46,7 +46,7 @@ QSBzaW1wbGUgdGV4dCBoZXJl
             using var textReader = new StringReader(MultiPartMessage);
             var internetMessageReader = new InternetMessageReader(textReader);
             var headers = internetMessageReader.ReadHeaders().ToArray();
-            var body = internetMessageReader.ReadBody();
+            var body = internetMessageReader.ReadBody().ReadRawBody();
             Assert.AreEqual(7,headers.Length);
         }
 
@@ -57,7 +57,7 @@ QSBzaW1wbGUgdGV4dCBoZXJl
             var internetMessageReader = new InternetMessageReader(textReader, InternetMessageFactory.Full);
             var headers = internetMessageReader.ReadHeaders().ToArray();
             var multiPartBody = internetMessageReader.ReadBody();
-            var body = multiPartBody.ReadBody();
+            var body = multiPartBody.ReadBody().ReadRawBody();
             var parts = multiPartBody.ReadParts().ToArray();
             Assert.AreEqual(2, parts.Length);
         }

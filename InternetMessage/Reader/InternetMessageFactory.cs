@@ -23,10 +23,10 @@ namespace InternetMessage.Reader
             InternetMessageFactory internetMessageFactory = new();
             internetMessageFactory.RegisterBodyType(delegate (TextReader textReader, IDictionary<string, ICollection<InternetMessageHeaderField>> headerFields)
             {
-                var separator = headerFields.GetMultipartMarker();
+                var separator = headerFields.GetMultipartBoundary();
                 if (separator is null)
                     return null; // pass
-                return new InternetMessageMultiPartBody(textReader, separator, internetMessageFactory);
+                return new InternetMessageMultiPartBody(textReader, headerFields, separator, internetMessageFactory);
             });
             return internetMessageFactory;
         }
@@ -68,7 +68,7 @@ namespace InternetMessage.Reader
         public InternetMessageBody CreateBody(TextReader textReader, IDictionary<string, ICollection<InternetMessageHeaderField>> headerFields)
         {
             return _bodyTypes.Select(b => b(textReader, headerFields)).FirstOrDefault(b => b is not null)
-                   ?? new InternetMessageBody(textReader);
+                   ?? new InternetMessageBody(textReader, headerFields);
         }
     }
 }

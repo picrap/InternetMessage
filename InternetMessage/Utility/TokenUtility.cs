@@ -8,13 +8,15 @@ namespace InternetMessage.Utility
 {
     public static class TokenUtility
     {
-        public static IEnumerable<ICollection<Token>> ChunkBy(this IEnumerable<Token> tokens, TokenType? tokenType = null, string tokenText = null)
+        public static IEnumerable<ICollection<Token>> ChunkBy(this IEnumerable<Token> tokens, TokenType? tokenType = null, string tokenText = null, int maximumChunks = int.MaxValue)
         {
             var slice = new List<Token>();
+            var chunksCount = 1;
             foreach (var token in tokens)
             {
-                if (token.Matches(tokenType, tokenText))
+                if (token.Matches(tokenType, tokenText) && chunksCount < maximumChunks)
                 {
+                    chunksCount++;
                     if (slice.Count > 0)
                         yield return slice;
                     slice = new();
@@ -66,6 +68,30 @@ namespace InternetMessage.Utility
                 1 => allTokens[0],
                 _ => new Token("", TokenType.Atom).AddChildren(allTokens)
             };
+        }
+
+        public static IEnumerable<Token> Split(this Token token, string separator)
+        {
+            if (!token.Type.HasSemantic())
+            {
+                yield return token;
+                yield break;
+            }
+
+            var parts = token.Text.Split(new[] { separator }, StringSplitOptions.None);
+            if (parts.Length == 1)
+            {
+                yield return token;
+                yield break;
+            }
+
+            for (var partIndex = 0; partIndex < parts.Length; partIndex++)
+            {
+                var part = parts[partIndex];
+                yield return new Token(part, token.Type);
+                if (partIndex < parts.Length - 1)
+                    yield return new Token(separator, token.Type);
+            }
         }
 
         private static bool CanAddChild(Token token, Token child)
