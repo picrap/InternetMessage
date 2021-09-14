@@ -1,17 +1,24 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using InternetMessage.Reader;
 
 namespace InternetMessage.Message
 {
     public class InternetMessageBody
     {
+        private static readonly InternetMessageReader[] NoInternetMessageReaders = new InternetMessageReader[0];
         protected readonly TextReader TextReader;
-
-        private string _body;
-        public virtual string Body => _body ??= TextReader.ReadToEnd();
 
         public InternetMessageBody(TextReader textReader)
         {
             TextReader = textReader;
+        }
+
+        public virtual string ReadBody() => TextReader.ReadToEnd();
+
+        public virtual IEnumerable<InternetMessageReader> ReadParts()
+        {
+            return NoInternetMessageReaders;
         }
     }
 }

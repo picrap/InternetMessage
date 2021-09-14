@@ -32,9 +32,16 @@ namespace InternetMessage.Utility
             if (!headerFields.TryGetValue("Content-Type", out var contentTypeHeaderField))
                 return null;
             var internetMessageStructuredHeaderField = contentTypeHeaderField.First().To<InternetMessageStructuredHeaderField>();
-            var tokens = internetMessageStructuredHeaderField.Tokens.NonWhite().ChunkBy(tokenType: TokenType.Special, tokenText: ";").ToArray();
-            if (!string.Equals(tokens[0].First().Text, "multipart/mixed", StringComparison.InvariantCultureIgnoreCase))
+            var tokens = internetMessageStructuredHeaderField.Tokens.ChunkBy(tokenType: TokenType.Special, tokenText: ";").Select(m => m.Combine()).ToArray();
+            if (!string.Equals(tokens[0].Text, "multipart/mixed", StringComparison.InvariantCultureIgnoreCase))
                 return null;
+            foreach (var token in tokens.Skip(1))
+            {
+                // TODO: use a real parser
+                var keyValue = token.Text.Split(new [] { '=' }, 2).Select(s=>s.Trim()).ToArray();
+                if (keyValue.Length == 2 && string.Equals(keyValue[0], "boundary", StringComparison.InvariantCultureIgnoreCase))
+                    return keyValue[1].Trim('"');
+            }
             return null;
         }
     }

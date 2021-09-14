@@ -26,28 +26,46 @@ namespace InternetMessage.Utility
                 yield return slice;
         }
 
-        // to be removed once Group works
-        public static IEnumerable<Token> NonWhite(this IEnumerable<Token> tokens)
-        {
-            return tokens.Where(t => t.Type != TokenType.Whitespace && t.Type != TokenType.Comment);
-        }
-
         public static IEnumerable<Token> Group(this IEnumerable<Token> tokens)
         {
             Token currentToken = null;
+            var whiteSpaces = new List<Token>();
             foreach (var token in tokens)
             {
+                if (whiteSpaces is not null && !token.Type.HasSemantic())
+                {
+                    whiteSpaces.Add(token);
+                    continue;
+                }
                 if (!CanAddChild(currentToken, token))
                 {
                     if (currentToken is not null)
                         yield return currentToken;
                     currentToken = new Token(token.Text, token.Type);
+                    if (whiteSpaces is not null)
+                    {
+                        currentToken.AddChildren(whiteSpaces);
+                        whiteSpaces = null;
+                    }
                 }
                 currentToken.AddChild(token);
             }
 
             if (currentToken is not null)
                 yield return currentToken;
+            else if (whiteSpaces is not null)
+                yield return new Token("", TokenType.Comment).AddChildren(whiteSpaces);
+        }
+
+        public static Token Combine(this IEnumerable<Token> tokens)
+        {
+            var allTokens = tokens.ToArray();
+            return allTokens.Length switch
+            {
+                0 => null,
+                1 => allTokens[0],
+                _ => new Token("", TokenType.Atom).AddChildren(allTokens)
+            };
         }
 
         private static bool CanAddChild(Token token, Token child)

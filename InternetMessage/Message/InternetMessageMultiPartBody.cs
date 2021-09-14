@@ -20,8 +20,6 @@ namespace InternetMessage.Message
             End
         }
 
-        public override string Body { get; }
-
         private readonly string _separator;
         private readonly InternetMessageFactory _factory;
         private string _newPart;
@@ -38,7 +36,7 @@ namespace InternetMessage.Message
             _lastPart = _newPart + "--";
         }
 
-        public InternetMessageBody ReadBody()
+        public override string ReadBody()
         {
             if (_state != State.Start)
                 throw new InvalidOperationException("Body has already been read");
@@ -49,19 +47,19 @@ namespace InternetMessage.Message
                 if (line == _newPart)
                 {
                     _state = State.Body;
-                    return _factory.CreateBody(new StringReader(partBuilder.ToString()), NoHeaderFields);
+                    return partBuilder.ToString();
                 }
                 if (line == _lastPart)
                 {
                     _state = State.Parts;
-                    return _factory.CreateBody(new StringReader(partBuilder.ToString()), NoHeaderFields);
+                    return partBuilder.ToString();
                 }
 
                 partBuilder.AppendLine(line);
             }
         }
 
-        public IEnumerable<InternetMessageReader> ReadParts()
+        public override IEnumerable<InternetMessageReader> ReadParts()
         {
             if (_state == State.Start)
                 throw new InvalidOperationException("Body has not been read");
@@ -84,6 +82,7 @@ namespace InternetMessage.Message
                 {
                     yield return new InternetMessageReader(new StringReader(partBuilder.ToString()), _factory);
                     partBuilder.Clear();
+                    continue;
                 }
 
                 partBuilder.AppendLine(line);

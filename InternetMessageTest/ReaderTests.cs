@@ -51,14 +51,15 @@ QSBzaW1wbGUgdGV4dCBoZXJl
         }
 
         [Test]
-        [Ignore("not finished yet")]
         public void FullReadTest()
         {
             using var textReader = new StringReader(MultiPartMessage);
             var internetMessageReader = new InternetMessageReader(textReader, InternetMessageFactory.Full);
             var headers = internetMessageReader.ReadHeaders().ToArray();
-            var body = internetMessageReader.ReadBody();
-            Assert.AreEqual(7, headers.Length);
+            var multiPartBody = internetMessageReader.ReadBody();
+            var body = multiPartBody.ReadBody();
+            var parts = multiPartBody.ReadParts().ToArray();
+            Assert.AreEqual(2, parts.Length);
         }
     }
 }

@@ -21,10 +21,18 @@ namespace InternetMessage.Tokens
             Type = type;
         }
 
-        public void AddChild(Token token)
+        public Token AddChild(Token token)
         {
             _groupedTokens.Add(token);
             Text = string.Join("", Children.Where(c => c.Type is TokenType.QuotedString or TokenType.Atom or TokenType.Special).Select(c => c.Text));
+            return this;
+        }
+
+        public Token AddChildren(IEnumerable<Token> tokens)
+        {
+            foreach (var token in tokens)
+                AddChild(token);
+            return this;
         }
 
         public bool Matches(TokenType? tokenType = null, string tokenText = null)
