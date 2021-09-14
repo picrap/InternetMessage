@@ -1,6 +1,7 @@
 
 using System.IO;
 using System.Linq;
+using InternetMessage.Message;
 using InternetMessage.Reader;
 using InternetMessage.Tokens;
 using NUnit.Framework;
@@ -15,30 +16,30 @@ namespace InternetMessageTest
         {
             var r = new InternetMessageHeaderBodyReader(new StringReader("abc"));
             var t = r.ReadRawTokens().ToArray();
-            Assert.AreEqual(1,t.Length);
-            Assert.AreEqual(TokenType.Atom,t[0].Type);
-            Assert.AreEqual("abc",t[0].Text);
+            Assert.AreEqual(1, t.Length);
+            Assert.AreEqual(TokenType.Atom, t[0].Type);
+            Assert.AreEqual("abc", t[0].Text);
         }
         [Test]
         public void ReadAtomsAndSpecialsTest()
         {
             var r = new InternetMessageHeaderBodyReader(new StringReader("10.69.10.170"));
             var t = r.ReadRawTokens().ToArray();
-            Assert.AreEqual(7,t.Length);
-            Assert.AreEqual(TokenType.Atom,t[0].Type);
-            Assert.AreEqual("10",t[0].Text);
-            Assert.AreEqual(TokenType.Special,t[1].Type);
-            Assert.AreEqual(".",t[1].Text);
-            Assert.AreEqual(TokenType.Atom,t[2].Type);
-            Assert.AreEqual("69",t[2].Text);
-            Assert.AreEqual(TokenType.Special,t[3].Type);
-            Assert.AreEqual(".",t[3].Text);
-            Assert.AreEqual(TokenType.Atom,t[4].Type);
-            Assert.AreEqual("10",t[4].Text);
-            Assert.AreEqual(TokenType.Special,t[5].Type);
-            Assert.AreEqual(".",t[5].Text);
-            Assert.AreEqual(TokenType.Atom,t[6].Type);
-            Assert.AreEqual("170",t[6].Text);
+            Assert.AreEqual(7, t.Length);
+            Assert.AreEqual(TokenType.Atom, t[0].Type);
+            Assert.AreEqual("10", t[0].Text);
+            Assert.AreEqual(TokenType.Special, t[1].Type);
+            Assert.AreEqual(".", t[1].Text);
+            Assert.AreEqual(TokenType.Atom, t[2].Type);
+            Assert.AreEqual("69", t[2].Text);
+            Assert.AreEqual(TokenType.Special, t[3].Type);
+            Assert.AreEqual(".", t[3].Text);
+            Assert.AreEqual(TokenType.Atom, t[4].Type);
+            Assert.AreEqual("10", t[4].Text);
+            Assert.AreEqual(TokenType.Special, t[5].Type);
+            Assert.AreEqual(".", t[5].Text);
+            Assert.AreEqual(TokenType.Atom, t[6].Type);
+            Assert.AreEqual("170", t[6].Text);
         }
 
         [Test]
@@ -46,7 +47,7 @@ namespace InternetMessageTest
         {
             var r = new InternetMessageHeaderBodyReader(new StringReader("a \"this is a quoted string\" bc"));
             var t = r.ReadRawTokens().Single(t => t.Type == TokenType.QuotedString);
-            Assert.AreEqual("this is a quoted string",t.Text);
+            Assert.AreEqual("this is a quoted string", t.Text);
         }
 
         [Test]
@@ -54,7 +55,7 @@ namespace InternetMessageTest
         {
             var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a (small comment) bc"));
             var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
-            Assert.AreEqual("(small comment)",t.Text);
+            Assert.AreEqual("(small comment)", t.Text);
         }
 
         [Test]
@@ -62,7 +63,22 @@ namespace InternetMessageTest
         {
             var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a ((very) small comment) bc"));
             var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
-            Assert.AreEqual("((very) small comment)",t.Text);
+            Assert.AreEqual("((very) small comment)", t.Text);
+        }
+
+        public const string ContentDispositionName = @"Content-Disposition";
+        public string[] ContentDispositionBody = new[]
+        {
+            @"attachment;",
+            @"	filename=""=?utf-8?B?U2ltcGxlLnR4dA==?="""
+        };
+
+        [Test]
+        public void EncodedStringTest()
+        {
+            var h = new InternetMessageHttpHeaderField(ContentDispositionName, ContentDispositionBody);
+            var f = h.Tokens.Get("filename").Single().Text;
+            Assert.AreEqual("Simple.txt", f);
         }
     }
 }

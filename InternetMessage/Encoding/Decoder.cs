@@ -7,21 +7,24 @@ namespace InternetMessage.Encoding
 {
     public abstract class Decoder
     {
+        // ByteDecoder comes first, we use Decoder[0] below
+        private static readonly Decoder[] Decoders = new Decoder[] { new ByteDecoder(), new Base64Decoder(), new QuotedPrintableDecoder() };
+
         private static readonly IDictionary<string, Decoder> KnownTransferDecoders =
-            new Decoder[] { new Base64Decoder() }.ToDictionary(d => d.TransferEncodingName, d => d, StringComparer.InvariantCultureIgnoreCase);
+            Decoders.SelectMany(d => d.TransferEncodingNames.Select(n => new { n, d })).ToDictionary(d => d.n, d => d.d, StringComparer.InvariantCultureIgnoreCase);
 
         private static readonly IDictionary<string, Decoder> KnownStringDecoders =
-            new Decoder[] { new Base64Decoder() }.ToDictionary(d => d.StringEncodingName, d => d, StringComparer.InvariantCultureIgnoreCase);
+            Decoders.SelectMany(d => d.StringEncodingNames.Select(n => new { n, d })).ToDictionary(d => d.n, d => d.d, StringComparer.InvariantCultureIgnoreCase);
 
-        public abstract string TransferEncodingName { get; }
-        public abstract string StringEncodingName { get; }
+        public abstract string[] TransferEncodingNames { get; }
+        public abstract string[] StringEncodingNames { get; }
 
         public abstract byte[] Decode(string encodedString);
 
         public static Decoder FindTransferDecoder(string transferEncodingName)
         {
             KnownTransferDecoders.TryGetValue(transferEncodingName, out var decoder);
-            return decoder;
+            return decoder ?? Decoders[0];
         }
 
         public static Decoder FindStringDecoder(string stringEncodingName)
@@ -31,10 +34,10 @@ namespace InternetMessage.Encoding
         }
 
         public static byte[] TryDecodeTransfer(string transferEncodingName, string encodedString) => FindTransferDecoder(transferEncodingName)?.Decode(encodedString);
-        
+
         public static string TryDecodeString(string stringEncodingName, string encodedString, string charset)
         {
-            var bytes= FindStringDecoder(stringEncodingName)?.Decode(encodedString);
+            var bytes = FindStringDecoder(stringEncodingName)?.Decode(encodedString);
             var encoding = System.Text.Encoding.GetEncoding(charset);
             return encoding.GetString(bytes);
         }

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using InternetMessage.Message;
 using InternetMessage.Tokens;
 using InternetMessage.Utility;
 using NUnit.Framework;

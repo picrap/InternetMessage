@@ -15,6 +15,7 @@ namespace InternetMessage.Message
         public class KeyValue
         {
             public readonly Token Key, Value;
+            public Token SingleValue => Key;
 
             public KeyValue(Token key, Token value)
             {
@@ -34,26 +35,28 @@ namespace InternetMessage.Message
 
         public class KeyValuesList : List<KeyValue>
         {
+            public KeyValuesList(IEnumerable<KeyValue> keyValues)
+                : base(keyValues)
+            { }
+
             public IEnumerable<Token> Get(string key)
             {
                 return this.Where(kv => string.Equals(kv.Key.Text, key, StringComparison.InvariantCultureIgnoreCase)).Select(kv => kv.Value);
             }
-
-            public KeyValuesList(IEnumerable<KeyValue> keyValues)
-                : base(keyValues)
-            { }
         }
 
         public class OrderedList : List<KeyValuesList>
         {
+            public OrderedList(IEnumerable<KeyValuesList> keyValuesLists)
+                : base(keyValuesLists)
+            { }
+
             public IEnumerable<Token> Get(string key)
             {
                 return this.SelectMany(l => l.Get(key));
             }
 
-            public OrderedList(IEnumerable<KeyValuesList> keyValuesLists)
-                : base(keyValuesLists)
-            { }
+            public Token SingleValue() => this.Single().First().SingleValue;
         }
 
         public OrderedList Tokens { get; }

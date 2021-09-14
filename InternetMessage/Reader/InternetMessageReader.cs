@@ -81,8 +81,10 @@ namespace InternetMessage.Reader
 
         public InternetMessageBody ReadBody()
         {
-            if (_state != State.Body)
+            if (_state == State.End)
                 throw new InvalidOperationException("Wrong time to read body");
+            if (_state < State.Body)
+                _ = ReadHeaders().ToArray();
             _state = State.End;
             return _factory.CreateBody(_textReader, _readHeaderFields);
         }

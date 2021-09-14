@@ -5,7 +5,7 @@ using InternetMessage.Reader;
 
 namespace InternetMessage.Message
 {
-    [DebuggerDisplay("{Name}: {Body[0]}")]
+    [DebuggerDisplay("{Name}: {FoldedRawBody[0]}")]
     public abstract class InternetMessageHeaderField
     {
         public string Name { get; }

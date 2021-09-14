@@ -70,30 +70,36 @@ namespace InternetMessage.Message
         public override IEnumerable<InternetMessageReader> ReadParts()
         {
             if (_state == State.Start)
-                throw new InvalidOperationException("Body has not been read");
-            if (_state == State.Parts)
-                yield break;
+                ReadBody();
             if (_state == State.End)
                 throw new InvalidOperationException("Parts have already been read");
 
             var partBuilder = new StringBuilder();
+            string lastLine = null;
             for (; ; )
             {
                 var line = TextReader.ReadLine();
                 if (line == _lastPart)
                 {
                     _state = State.End;
+                    if (!string.IsNullOrEmpty(lastLine))
+                        partBuilder.AppendLine(lastLine);
                     yield return new InternetMessageReader(new StringReader(partBuilder.ToString()), _factory);
                     yield break;
                 }
                 if (line == _newPart)
                 {
+                    if (!string.IsNullOrEmpty(lastLine))
+                        partBuilder.AppendLine(lastLine);
+                    lastLine = null;
                     yield return new InternetMessageReader(new StringReader(partBuilder.ToString()), _factory);
                     partBuilder.Clear();
                     continue;
                 }
 
-                partBuilder.AppendLine(line);
+                if (lastLine is not null)
+                    partBuilder.AppendLine(lastLine);
+                lastLine = line;
             }
         }
     }

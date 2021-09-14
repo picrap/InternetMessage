@@ -1,5 +1,8 @@
+using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using InternetMessage.Message;
 using InternetMessage.Reader;
 using NUnit.Framework;
 
@@ -35,7 +38,6 @@ Content-Disposition: attachment;
 	filename=""=?utf-8?B?U2ltcGxlLnR4dA==?=""
 
 QSBzaW1wbGUgdGV4dCBoZXJl
-
 --Mark=_531883546265941773361--
 ";
         #endregion
@@ -47,7 +49,7 @@ QSBzaW1wbGUgdGV4dCBoZXJl
             var internetMessageReader = new InternetMessageReader(textReader);
             var headers = internetMessageReader.ReadHeaders().ToArray();
             var body = internetMessageReader.ReadBody().ReadRawBody();
-            Assert.AreEqual(7,headers.Length);
+            Assert.AreEqual(7, headers.Length);
         }
 
         [Test]
@@ -57,8 +59,35 @@ QSBzaW1wbGUgdGV4dCBoZXJl
             var internetMessageReader = new InternetMessageReader(textReader, InternetMessageFactory.Full);
             var headers = internetMessageReader.ReadHeaders().ToArray();
             var multiPartBody = internetMessageReader.ReadBody();
-            var body = multiPartBody.ReadBody().ReadRawBody();
             var parts = multiPartBody.ReadParts().ToArray();
+            foreach (var part in parts)
+            {
+                var partHeaders = part.ReadHeaders().GroupBy(h => h.Name)
+                    .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.InvariantCultureIgnoreCase);
+                if (partHeaders.TryGetValue("content-type", out var contentTypeHeaderField))
+                {
+                    bool isAttachment = false;
+                    if (partHeaders.TryGetValue("content-disposition", out var contentDispositionHeaderField))
+                        isAttachment = contentDispositionHeaderField[0].To<InternetMessageHttpHeaderField>().Tokens.Get("attachment").Any();
+                    var contentType = contentTypeHeaderField.First().To<InternetMessageHttpHeaderField>().Tokens.SingleValue().Text;
+                    if (contentType.StartsWith("text/", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var text = new StreamReader(part.ReadBody().ReadDecodedBody()).ReadToEnd().Trim();
+                        Assert.AreEqual("Here we go", text);
+                    }
+                    else
+                    {
+                        if (isAttachment)
+                        {
+                            var name = contentDispositionHeaderField[0].To<InternetMessageHttpHeaderField>().Tokens.Get("filename").Single().Text;
+                            Assert.AreEqual("Simple.txt", name);
+                        }
+                        var bytes = part.ReadBody().ReadDecodedBody();
+                        var simpleTxt = new StreamReader(bytes).ReadToEnd();
+                        Assert.AreEqual("A simple text here",simpleTxt);
+                    }
+                }
+            }
             Assert.AreEqual(2, parts.Length);
         }
     }
