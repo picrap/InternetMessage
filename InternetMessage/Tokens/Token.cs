@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using InternetMessage.Encoding;
+using InternetMessage.Utility;
 
 namespace InternetMessage.Tokens
 {
@@ -10,21 +12,25 @@ namespace InternetMessage.Tokens
     {
         private readonly IList<Token> _groupedTokens = new List<Token>();
 
+        private readonly string _rawText;
+
         public string Text { get; private set; }
+
         public TokenType Type { get; }
 
         public IEnumerable<Token> Children => _groupedTokens;
 
-        public Token(string text, TokenType type)
+        public Token(string rawText, TokenType type)
         {
-            Text = text;
+            _rawText = rawText;
+            Text =  rawText.Decode();
             Type = type;
         }
 
         public Token AddChild(Token token)
         {
             _groupedTokens.Add(token);
-            Text = string.Join("", Children.Where(c => c.Type is TokenType.QuotedString or TokenType.Atom or TokenType.Special).Select(c => c.Text));
+            Text = string.Join("", Children.Where(c => c.Type.HasSemantic()).Select(c => c.Text));
             return this;
         }
 

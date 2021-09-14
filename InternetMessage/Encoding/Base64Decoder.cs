@@ -4,10 +4,12 @@ namespace InternetMessage.Encoding
 {
     public class Base64Decoder : Decoder
     {
-        public override string Name => "base64";
-        public override byte[] Decode(string raw)
+        public override string TransferEncodingName => "base64";
+        public override string StringEncodingName => "b";
+
+        public override byte[] Decode(string encodedString)
         {
-            return Convert.FromBase64String(raw);
+            return Convert.FromBase64String(encodedString);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using InternetMessage.Encoding;
 
 namespace InternetMessage.Utility
 {
@@ -11,24 +12,9 @@ namespace InternetMessage.Utility
                 return s;
             // format is “=?«charset»?«encoding»?«encoded-text»?=”
             var parts = s.Split('?');
-            return parts[2] switch
-            {
-                "B" => DecodeBase64(parts[1], parts[3]),
-                "Q" => DecodeQuotedPrintable(parts[1], parts[3]),
-                _ => throw new InvalidOperationException()
-            };
-        }
-
-        private static string DecodeQuotedPrintable(string charset, string encodedText)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static string DecodeBase64(string charset, string encodedText)
-        {
-            var bytes = Convert.FromBase64String(encodedText);
-            var encoding = System.Text.Encoding.GetEncoding(charset);
-            return encoding.GetString(bytes);
+            if (parts.Length != 5)
+                return s;
+            return Decoder.TryDecodeString(parts[2], parts[3], parts[1]);
         }
     }
 }
