@@ -25,10 +25,6 @@
   <ItemGroup>
     <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="." />
     <None Include="..\Icon\InternetMessage.png" Link="InternetMessage.png" Pack="true" PackagePath="." />
-    <None Include="InternetMessage.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
