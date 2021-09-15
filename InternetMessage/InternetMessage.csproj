@@ -12,7 +12,7 @@
     <AssemblyVersion>0.2.1</AssemblyVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <FileVersion></FileVersion>
-    <Version>0.2</Version>
+    <Version>0.2.1</Version>
     <Description>An Internet Message Format parser (in the end it should be close to RFC 5322)</Description>
     <PackageIcon>InternetMessage.png</PackageIcon>
     <Copyright>$(Authors)</Copyright>
