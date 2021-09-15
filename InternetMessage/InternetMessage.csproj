@@ -9,11 +9,13 @@
     <RepositoryUrl>https://github.com/picrap/InternetMessage.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>rfc5322</PackageTags>
-    <AssemblyVersion>0.2</AssemblyVersion>
+    <AssemblyVersion>0.2.1</AssemblyVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <FileVersion></FileVersion>
     <Version>0.2</Version>
     <Description>An Internet Message Format parser (in the end it should be close to RFC 5322)</Description>
+    <PackageIcon>InternetMessage.png</PackageIcon>
+    <Copyright>$(Authors)</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +24,11 @@
 
   <ItemGroup>
     <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="." />
+    <None Include="..\Icon\InternetMessage.png" Link="InternetMessage.png" Pack="true" PackagePath="." />
+    <None Include="InternetMessage.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
