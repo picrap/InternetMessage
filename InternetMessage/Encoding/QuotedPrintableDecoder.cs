@@ -27,7 +27,7 @@ namespace InternetMessage.Encoding
                         }
                         else
                         {
-                            var c2 = encodedString[i + 1];
+                            var c2 = encodedString[i + 2];
                             if (!IsCrLf(c2))
                                 i++;
                             else
