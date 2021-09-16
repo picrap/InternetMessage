@@ -30,7 +30,7 @@ namespace System
     /// Value tuple with 2 items
     /// </summary>
     /// <typeparam name="T1">The type of the 1.</typeparam>
-    public struct ValueTuple<T1> : IValueTuple
+    internal struct ValueTuple<T1> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -73,7 +73,7 @@ namespace System
     /// </summary>
     /// <typeparam name="T1">The type of the 1.</typeparam>
     /// <typeparam name="T2">The type of the 2.</typeparam>
-    public struct ValueTuple<T1, T2> : IValueTuple
+    internal struct ValueTuple<T1, T2> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -129,7 +129,7 @@ namespace System
     /// <typeparam name="T1">The type of the 1.</typeparam>
     /// <typeparam name="T2">The type of the 2.</typeparam>
     /// <typeparam name="T3">The type of the 3.</typeparam>
-    public struct ValueTuple<T1, T2, T3> : IValueTuple
+    internal struct ValueTuple<T1, T2, T3> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -198,7 +198,7 @@ namespace System
     /// <typeparam name="T2">The type of the 2.</typeparam>
     /// <typeparam name="T3">The type of the 3.</typeparam>
     /// <typeparam name="T4">The type of the 4.</typeparam>
-    public struct ValueTuple<T1, T2, T3, T4> : IValueTuple
+    internal struct ValueTuple<T1, T2, T3, T4> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -280,7 +280,7 @@ namespace System
     /// <typeparam name="T3">The type of the 3.</typeparam>
     /// <typeparam name="T4">The type of the 4.</typeparam>
     /// <typeparam name="T5">The type of the 5.</typeparam>
-    public struct ValueTuple<T1, T2, T3, T4, T5> : IValueTuple
+    internal struct ValueTuple<T1, T2, T3, T4, T5> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -372,7 +372,7 @@ namespace System
     /// <typeparam name="T4">The type of the 4.</typeparam>
     /// <typeparam name="T5">The type of the 5.</typeparam>
     /// <typeparam name="T6">The type of the 6.</typeparam>
-    public struct ValueTuple<T1, T2, T3, T4, T5, T6> : IValueTuple
+    internal struct ValueTuple<T1, T2, T3, T4, T5, T6> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -474,7 +474,7 @@ namespace System
     /// <typeparam name="T5">The type of the 5.</typeparam>
     /// <typeparam name="T6">The type of the 6.</typeparam>
     /// <typeparam name="T7">The type of the 7.</typeparam>
-    public struct ValueTuple<T1, T2, T3, T4, T5, T6, T7> : IValueTuple
+    internal struct ValueTuple<T1, T2, T3, T4, T5, T6, T7> : IValueTuple
     {
         /// <summary>
         /// Gets the item1.
@@ -587,7 +587,7 @@ namespace System
     /// <typeparam name="T7">The type of the 7.</typeparam>
     /// <typeparam name="T8">The type of the 8.</typeparam>
     /// <seealso cref="System.IValueTuple" />
-    public struct ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> : IValueTuple
+    internal struct ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> : IValueTuple
     where TRest : struct
     {
         /// <summary>
