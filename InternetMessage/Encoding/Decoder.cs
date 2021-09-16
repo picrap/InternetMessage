@@ -23,6 +23,8 @@ namespace InternetMessage.Encoding
 
         public static Decoder FindTransferDecoder(string transferEncodingName)
         {
+            if (transferEncodingName is null)
+                return Decoders[0];
             KnownTransferDecoders.TryGetValue(transferEncodingName, out var decoder);
             return decoder ?? Decoders[0];
         }

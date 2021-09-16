@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿
+using System;
 
 namespace InternetMessage.Encoding
 {
@@ -9,7 +10,15 @@ namespace InternetMessage.Encoding
 
         public override byte[] Decode(string encodedString)
         {
-            return encodedString.Cast<byte>().ToArray();
+            var bytes = new byte[encodedString.Length];
+            for (int i = 0; i < encodedString.Length; i++)
+            {
+                var c = encodedString[i];
+                if (c >= 0xFF)
+                    throw new FormatException($"Invalid character ({(int)c}) at index {i}");
+                bytes[i] = (byte)c;
+            }
+            return bytes;
         }
     }
 }
