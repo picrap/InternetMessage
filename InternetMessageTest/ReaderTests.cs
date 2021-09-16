@@ -62,8 +62,7 @@ QSBzaW1wbGUgdGV4dCBoZXJl
             var parts = multiPartBody.ReadParts().ToArray();
             foreach (var part in parts)
             {
-                var partHeaders = part.ReadHeaders().GroupBy(h => h.Name)
-                    .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.InvariantCultureIgnoreCase);
+                var partHeaders = part.ReadAllHeaders();
                 if (partHeaders.TryGetValue("content-type", out var contentTypeHeaderField))
                 {
                     bool isAttachment = false;

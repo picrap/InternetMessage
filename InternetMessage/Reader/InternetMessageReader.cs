@@ -42,6 +42,8 @@ namespace InternetMessage.Reader
             }
         }
 
+        public IDictionary<string, IList<InternetMessageHeaderField>> ReadAllHeaders() => ReadHeaders().ToHeaders();
+
         private IEnumerable<InternetMessageHeaderField> DoReadHeaders()
         {
             if (_state >= State.Body)
