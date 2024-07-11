@@ -55,6 +55,6 @@ public class QuotedPrintableDecoder : Decoder
         return bytes.ToArray();
     }
 
-    private static bool IsHex(char c) => c >= '0' && c <= '9' || c >= 'A' && c <= 'F';
+    private static bool IsHex(char c) => c is >= '0' and <= '9' or >= 'A' and <= 'F' or >= 'a' and <= 'f';
     private static bool IsCrLf(char c) => c == '\n' || c == '\r';
 }

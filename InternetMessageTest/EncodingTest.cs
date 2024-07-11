@@ -25,12 +25,14 @@ public class EncodingTest
     }
 
     [Test]
-    public void QuotedPrintableEncodedTest()
+    [TestCase("a=40b", "a@b")]
+    [TestCase("a=e2=82=acb", "a€b")]
+    [TestCase("a=E2=82=ACb", "a€b")]
+    public void QuotedPrintableEncodedTest(string encoded, string expected)
     {
-        var e = "a=40b";
         var qp = new QuotedPrintableDecoder();
-        var s = System.Text.Encoding.Default.GetString(qp.Decode(e));
-        Assert.That(s, Is.EqualTo("a@b"));
+        var s = System.Text.Encoding.UTF8.GetString(qp.Decode(encoded));
+        Assert.That(s, Is.EqualTo(expected));
     }
 
     [Test]
