@@ -8,7 +8,7 @@ namespace InternetMessage.Utility;
 
 public static class HeaderUtility
 {
-    public static ValueTuple2<string /*Name*/, string /*Body*/> SplitHeaderField(this string literalHeaderField)
+    public static ValueTuple<string /*Name*/, string /*Body*/> SplitHeaderField(this string literalHeaderField)
     {
         var colonIndex = literalHeaderField.IndexOf(':');
         if (colonIndex < 0)
@@ -18,7 +18,7 @@ public static class HeaderUtility
         return new(name, body);
     }
 
-    public static ValueTuple2<string /*Name*/, string[] /*Body*/> SplitFoldedHeaderField(this IEnumerable<string> foldedHeaderField)
+    public static ValueTuple<string /*Name*/, string[] /*Body*/> SplitFoldedHeaderField(this IEnumerable<string> foldedHeaderField)
     {
         var foldedRawBody = foldedHeaderField.ToArray();
         var (name, body) = foldedRawBody[0].SplitHeaderField();
