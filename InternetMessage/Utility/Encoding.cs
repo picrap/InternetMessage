@@ -14,6 +14,6 @@ public static class Encoding
         var parts = s.Split('?');
         if (parts.Length != 5)
             return s;
-        return Decoder.TryDecodeString(parts[2], parts[3], parts[1]);
+        return Decoder.TryDecodeString(parts[2], parts[3], parts[1]) ?? s;
     }
 }

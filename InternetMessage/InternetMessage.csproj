@@ -22,4 +22,8 @@
     <None Include="..\Icon\InternetMessage.png" Link="InternetMessage.png" Pack="true" PackagePath="." />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+
 </Project>

@@ -40,7 +40,14 @@ public abstract class Decoder
     public static string TryDecodeString(string stringEncodingName, string encodedString, string charset)
     {
         var bytes = FindStringDecoder(stringEncodingName)?.Decode(encodedString);
-        var encoding = System.Text.Encoding.GetEncoding(charset);
-        return encoding.GetString(bytes);
+        try
+        {
+            var encoding = System.Text.Encoding.GetEncoding(charset);
+            return encoding.GetString(bytes);
+        }
+        catch(ArgumentException)
+        {
+            return null;
+        }
     }
 }

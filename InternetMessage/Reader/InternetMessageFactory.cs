@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using InternetMessage.Message;
 using InternetMessage.Utility;
 
@@ -17,6 +18,11 @@ public class InternetMessageFactory
 
     public static InternetMessageFactory Raw = new();
     public static InternetMessageFactory Full = CreateFull();
+
+    static InternetMessageFactory()
+    {
+        System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
 
     private static InternetMessageFactory CreateFull()
     {
