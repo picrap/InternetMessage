@@ -5,7 +5,12 @@ VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InternetMessage", "InternetMessage\InternetMessage.csproj", "{226CF832-5D77-4E95-ABF2-365E36284280}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetMessageTest", "InternetMessageTest\InternetMessageTest.csproj", "{62543848-FAF7-408B-BAFE-B5E1BEF40A7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InternetMessageTest", "InternetMessageTest\InternetMessageTest.csproj", "{62543848-FAF7-408B-BAFE-B5E1BEF40A7E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EFFD4810-A1AB-44E7-92FA-FFAE78D9CDE0}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

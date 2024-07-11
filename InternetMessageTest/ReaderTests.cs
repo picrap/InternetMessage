@@ -1,18 +1,17 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using InternetMessage.Message;
 using InternetMessage.Reader;
 using NUnit.Framework;
 
-namespace InternetMessageTest
+namespace InternetMessageTest;
+
+[TestFixture]
+public class ReaderTests
 {
-    [TestFixture]
-    public class ReaderTests
-    {
-        #region public const string MultiPartMessage = @"…"
-        public const string MultiPartMessage = @"From: ""Some Dude"" <>
+    #region public const string MultiPartMessage = @"…"
+    public const string MultiPartMessage = @"From: ""Some Dude"" <>
 To: some.other@du.de
 Subject: =?utf-8?B?V2l0aCBhdHRhY2htZW50cw==?=
 Date: Wed, 8 Sep 2021 3:19:09 -0500
@@ -40,54 +39,53 @@ Content-Disposition: attachment;
 QSBzaW1wbGUgdGV4dCBoZXJl
 --Mark=_531883546265941773361--
 ";
-        #endregion
+    #endregion
 
-        [Test]
-        public void SimpleReadTest()
-        {
-            using var textReader = new StringReader(MultiPartMessage);
-            var internetMessageReader = new InternetMessageReader(textReader);
-            var headers = internetMessageReader.ReadHeaders().ToArray();
-            var body = internetMessageReader.ReadBody().ReadRawBody();
-            Assert.AreEqual(7, headers.Length);
-        }
+    [Test]
+    public void SimpleReadTest()
+    {
+        using var textReader = new StringReader(MultiPartMessage);
+        var internetMessageReader = new InternetMessageReader(textReader);
+        var headers = internetMessageReader.ReadHeaders().ToArray();
+        var body = internetMessageReader.ReadBody().ReadRawBody();
+        Assert.That(headers.Length, Is.EqualTo(7));
+    }
 
-        [Test]
-        public void FullReadTest()
+    [Test]
+    public void FullReadTest()
+    {
+        using var textReader = new StringReader(MultiPartMessage);
+        var internetMessageReader = new InternetMessageReader(textReader, InternetMessageFactory.Full);
+        var headers = internetMessageReader.ReadHeaders().ToArray();
+        var multiPartBody = internetMessageReader.ReadBody();
+        var parts = multiPartBody.ReadParts().ToArray();
+        foreach (var part in parts)
         {
-            using var textReader = new StringReader(MultiPartMessage);
-            var internetMessageReader = new InternetMessageReader(textReader, InternetMessageFactory.Full);
-            var headers = internetMessageReader.ReadHeaders().ToArray();
-            var multiPartBody = internetMessageReader.ReadBody();
-            var parts = multiPartBody.ReadParts().ToArray();
-            foreach (var part in parts)
+            var partHeaders = part.ReadAllHeaders();
+            if (partHeaders.TryGetValue("content-type", out var contentTypeHeaderField))
             {
-                var partHeaders = part.ReadAllHeaders();
-                if (partHeaders.TryGetValue("content-type", out var contentTypeHeaderField))
+                bool isAttachment = false;
+                if (partHeaders.TryGetValue("content-disposition", out var contentDispositionHeaderField))
+                    isAttachment = contentDispositionHeaderField[0].To<InternetMessageHttpHeaderField>().Tokens.Get("attachment").Any();
+                var contentType = contentTypeHeaderField.First().To<InternetMessageHttpHeaderField>().Tokens.SingleValue().Text;
+                if (contentType.StartsWith("text/", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    bool isAttachment = false;
-                    if (partHeaders.TryGetValue("content-disposition", out var contentDispositionHeaderField))
-                        isAttachment = contentDispositionHeaderField[0].To<InternetMessageHttpHeaderField>().Tokens.Get("attachment").Any();
-                    var contentType = contentTypeHeaderField.First().To<InternetMessageHttpHeaderField>().Tokens.SingleValue().Text;
-                    if (contentType.StartsWith("text/", StringComparison.InvariantCultureIgnoreCase))
+                    var text = new StreamReader(part.ReadBody().ReadDecodedBody()).ReadToEnd().Trim();
+                    Assert.That(text, Is.EqualTo("Here we go"));
+                }
+                else
+                {
+                    if (isAttachment)
                     {
-                        var text = new StreamReader(part.ReadBody().ReadDecodedBody()).ReadToEnd().Trim();
-                        Assert.AreEqual("Here we go", text);
+                        var name = contentDispositionHeaderField[0].To<InternetMessageHttpHeaderField>().Tokens.Get("filename").Single().Text;
+                        Assert.That(name, Is.EqualTo("Simple.txt"));
                     }
-                    else
-                    {
-                        if (isAttachment)
-                        {
-                            var name = contentDispositionHeaderField[0].To<InternetMessageHttpHeaderField>().Tokens.Get("filename").Single().Text;
-                            Assert.AreEqual("Simple.txt", name);
-                        }
-                        var bytes = part.ReadBody().ReadDecodedBody();
-                        var simpleTxt = new StreamReader(bytes).ReadToEnd();
-                        Assert.AreEqual("A simple text here",simpleTxt);
-                    }
+                    var bytes = part.ReadBody().ReadDecodedBody();
+                    var simpleTxt = new StreamReader(bytes).ReadToEnd();
+                    Assert.That(simpleTxt, Is.EqualTo("A simple text here"));
                 }
             }
-            Assert.AreEqual(2, parts.Length);
         }
+        Assert.That(parts.Length, Is.EqualTo(2));
     }
 }

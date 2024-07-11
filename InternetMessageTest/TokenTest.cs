@@ -1,21 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using InternetMessage.Message;
+﻿using System.Linq;
 using InternetMessage.Tokens;
 using InternetMessage.Utility;
 using NUnit.Framework;
 
-namespace InternetMessageTest
+namespace InternetMessageTest;
+
+[TestFixture]
+public class TokenTest
 {
-    [TestFixture]
-    public class TokenTest
+    [Test]
+    public void GroupAtomsTest()
     {
-        [Test]
-        public void GroupAtomsTest()
+        var tt = new[]
         {
-            var tt = new[]
-            {
                 new Token("1", TokenType.Atom),
                 new Token(".", TokenType.Atom),
                 new Token("2", TokenType.Atom),
@@ -24,10 +21,9 @@ namespace InternetMessageTest
                 new Token(".", TokenType.Atom),
                 new Token("4", TokenType.Atom),
             };
-            var t = tt.Group().ToArray();
-            Assert.AreEqual(1, t.Length);
-            Assert.AreEqual(TokenType.Atom,t[0].Type);
-            Assert.AreEqual("1.2.3.4",t[0].Text);
-        }
+        var t = tt.Group().ToArray();
+        Assert.That(t.Length, Is.EqualTo(1));
+        Assert.That(t[0].Type, Is.EqualTo(TokenType.Atom));
+        Assert.That(t[0].Text, Is.EqualTo("1.2.3.4"));
     }
 }

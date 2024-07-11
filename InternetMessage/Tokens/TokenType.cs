@@ -1,11 +1,10 @@
-﻿namespace InternetMessage.Tokens
+﻿namespace InternetMessage.Tokens;
+
+public enum TokenType
 {
-    public enum TokenType
-    {
-        Whitespace,
-        Comment,
-        QuotedString,
-        Atom,
-        Special,
-    }
+    Whitespace,
+    Comment,
+    QuotedString,
+    Atom,
+    Special,
 }

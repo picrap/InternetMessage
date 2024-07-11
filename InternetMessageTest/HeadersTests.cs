@@ -6,79 +6,79 @@ using InternetMessage.Reader;
 using InternetMessage.Tokens;
 using NUnit.Framework;
 
-namespace InternetMessageTest
+namespace InternetMessageTest;
+
+[TestFixture]
+public class HeadersTests
 {
-    [TestFixture]
-    public class HeadersTests
+    [Test]
+    public void ReadAtomTest()
     {
-        [Test]
-        public void ReadAtomTest()
-        {
-            var r = new InternetMessageHeaderBodyReader(new StringReader("abc"));
-            var t = r.ReadRawTokens().ToArray();
-            Assert.AreEqual(1, t.Length);
-            Assert.AreEqual(TokenType.Atom, t[0].Type);
-            Assert.AreEqual("abc", t[0].Text);
-        }
-        [Test]
-        public void ReadAtomsAndSpecialsTest()
-        {
-            var r = new InternetMessageHeaderBodyReader(new StringReader("10.69.10.170"));
-            var t = r.ReadRawTokens().ToArray();
-            Assert.AreEqual(7, t.Length);
-            Assert.AreEqual(TokenType.Atom, t[0].Type);
-            Assert.AreEqual("10", t[0].Text);
-            Assert.AreEqual(TokenType.Special, t[1].Type);
-            Assert.AreEqual(".", t[1].Text);
-            Assert.AreEqual(TokenType.Atom, t[2].Type);
-            Assert.AreEqual("69", t[2].Text);
-            Assert.AreEqual(TokenType.Special, t[3].Type);
-            Assert.AreEqual(".", t[3].Text);
-            Assert.AreEqual(TokenType.Atom, t[4].Type);
-            Assert.AreEqual("10", t[4].Text);
-            Assert.AreEqual(TokenType.Special, t[5].Type);
-            Assert.AreEqual(".", t[5].Text);
-            Assert.AreEqual(TokenType.Atom, t[6].Type);
-            Assert.AreEqual("170", t[6].Text);
-        }
+        var r = new InternetMessageHeaderBodyReader(new StringReader("abc"));
+        var t = r.ReadRawTokens().ToArray();
+        Assert.That(t.Length, Is.EqualTo(1));
+        Assert.That(t[0].Type, Is.EqualTo(TokenType.Atom));
+        Assert.That(t[0].Text, Is.EqualTo("abc"));
+    }
+    [Test]
+    public void ReadAtomsAndSpecialsTest()
+    {
+        var r = new InternetMessageHeaderBodyReader(new StringReader("10.69.10.170"));
+        var t = r.ReadRawTokens().ToArray();
+        Assert.That(t.Length, Is.EqualTo(7));
+        Assert.That(t[0].Type, Is.EqualTo(TokenType.Atom));
+        Assert.That(t[0].Text, Is.EqualTo("10"));
+        Assert.That(t[1].Type, Is.EqualTo(TokenType.Special));
+        Assert.That(t[1].Text, Is.EqualTo("."));
+        Assert.That(t[2].Type, Is.EqualTo(TokenType.Atom));
+        Assert.That(t[2].Text, Is.EqualTo("69"));
+        Assert.That(t[3].Type, Is.EqualTo(TokenType.Special));
+        Assert.That(t[3].Text, Is.EqualTo("."));
+        Assert.That(t[4].Type, Is.EqualTo(TokenType.Atom));
+        Assert.That(t[4].Text, Is.EqualTo("10"));
+        Assert.That(t[5].Type, Is.EqualTo(TokenType.Special));
+        Assert.That(t[5].Text, Is.EqualTo("."));
+        Assert.That(t[6].Type, Is.EqualTo(TokenType.Atom));
+        Assert.That(t[6].Text, Is.EqualTo("170"));
+    }
 
-        [Test]
-        public void ReadQuotedStringTest()
-        {
-            var r = new InternetMessageHeaderBodyReader(new StringReader("a \"this is a quoted string\" bc"));
-            var t = r.ReadRawTokens().Single(t => t.Type == TokenType.QuotedString);
-            Assert.AreEqual("this is a quoted string", t.Text);
-        }
+    [Test]
+    public void ReadQuotedStringTest()
+    {
+        var r = new InternetMessageHeaderBodyReader(new StringReader("a \"this is a quoted string\" bc"));
+        var t = r.ReadRawTokens().Single(t => t.Type == TokenType.QuotedString);
+        Assert.That(t.Text, Is.EqualTo("this is a quoted string"));
+    }
 
-        [Test]
-        public void ReadCommentTest()
-        {
-            var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a (small comment) bc"));
-            var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
-            Assert.AreEqual("(small comment)", t.Text);
-        }
+    [Test]
+    public void ReadCommentTest()
+    {
+        var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a (small comment) bc"));
+        var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
+        Assert.That(t.Text, Is.EqualTo("(small comment)"));
+    }
 
-        [Test]
-        public void ReadNestedCommentTest()
-        {
-            var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a ((very) small comment) bc"));
-            var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
-            Assert.AreEqual("((very) small comment)", t.Text);
-        }
+    [Test]
+    public void ReadNestedCommentTest()
+    {
+        var r = new InternetMessageHeaderBodyReader(new StringReader("a this is a ((very) small comment) bc"));
+        var t = r.ReadRawTokens().Single(t => t.Type == TokenType.Comment);
+        Assert.That(t.Text, Is.EqualTo("((very) small comment)"));
+    }
 
-        public const string ContentDispositionName = @"Content-Disposition";
-        public string[] ContentDispositionBody = new[]
-        {
+    public const string ContentDispositionName = @"Content-Disposition";
+    public string[] ContentDispositionBody = new[]
+    {
             @"attachment;",
             @"	filename=""=?utf-8?B?U2ltcGxlLnR4dA==?="""
         };
 
-        [Test]
-        public void EncodedStringTest()
-        {
-            var h = new InternetMessageHttpHeaderField(ContentDispositionName, ContentDispositionBody);
-            var f = h.Tokens.Get("filename").Single().Text;
-            Assert.AreEqual("Simple.txt", f);
-        }
+    [Test]
+    public void EncodedStringTest()
+    {
+        var h = new InternetMessageHttpHeaderField(ContentDispositionName, ContentDispositionBody);
+        var f = h.Tokens.Get("filename").Single().Text;
+        Assert.That(f, Is.EqualTo("Simple.txt"));
     }
 }
+

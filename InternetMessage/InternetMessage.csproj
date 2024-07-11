@@ -1,8 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
 
   <PropertyGroup>
-    <TargetFrameworks>net40-client;net5.0</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>picrap</Authors>
     <PackageProjectUrl>https://github.com/picrap/InternetMessage</PackageProjectUrl>
@@ -17,10 +16,6 @@
     <PackageIcon>InternetMessage.png</PackageIcon>
     <Copyright>$(Authors)</Copyright>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="System\**" Condition="'$(TargetFramework)' != 'net40-client'" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="." />

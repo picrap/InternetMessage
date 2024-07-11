@@ -1,22 +1,21 @@
 ﻿
 
-namespace InternetMessage.Utility
+namespace InternetMessage.Utility;
+
+public struct ValueTuple2<T1, T2>
 {
-    public struct ValueTuple2<T1, T2>
+    public T1 Item1 { get; }
+    public T2 Item2 { get; }
+
+    public ValueTuple2(T1 item1, T2 item2)
     {
-        public T1 Item1 { get; }
-        public T2 Item2 { get; }
+        Item1 = item1;
+        Item2 = item2;
+    }
 
-        public ValueTuple2(T1 item1, T2 item2)
-        {
-            Item1 = item1;
-            Item2 = item2;
-        }
-
-        public void Deconstruct(out T1 item1, out T2 item2)
-        {
-            item1 = Item1;
-            item2 = Item2;
-        }
+    public void Deconstruct(out T1 item1, out T2 item2)
+    {
+        item1 = Item1;
+        item2 = Item2;
     }
 }
