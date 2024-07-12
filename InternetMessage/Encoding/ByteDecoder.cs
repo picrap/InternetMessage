@@ -14,8 +14,8 @@ public class ByteDecoder : Decoder
         for (int i = 0; i < encodedString.Length; i++)
         {
             var c = encodedString[i];
-            if (c >= 0xFF)
-                throw new FormatException($"Invalid character ({(int)c}) at index {i}");
+            if (c > 0xFF)
+                c = '?';
             bytes[i] = (byte)c;
         }
         return bytes;
